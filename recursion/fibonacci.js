@@ -1,20 +1,11 @@
 // N is the num of fibonacci numbers
 const fibs = (n) => {
     let arr = [];
-
-    for(let i = 0; i < n; i++)
+    for(let i = 0; i <= n; i++)
     {
-        if(i == 0)
+        if(i <= 1)
         {
-            arr.push(0);
-        }
-        else if(i == 1)
-        {
-            arr.push(1);
-        }
-        else if(i == 2)
-        {
-            arr.push(1);
+            arr.push(i);
         }
         else
         {     
@@ -25,4 +16,18 @@ const fibs = (n) => {
 }
 
 console.log(fibs(8));
+
+const fibsRec = (n) => {
+    if(n <= 1)
+    {
+        return n;
+    }
+    else
+    {
+        return fibsRec(n-1) + fibsRec(n-2);
+    }
+}
+
+console.log(fibsRec(8));
+
 
