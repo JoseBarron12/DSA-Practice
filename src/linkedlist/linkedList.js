@@ -189,8 +189,114 @@ export class LinkedList {
         
         this.size = this.size - 1;
         return;
-
     }
+
+    // Method for HashMap, checking if value is to be overwritten for key return
+    // false if not, and return true and update value of node.
+    updateKey(key, newValue) 
+    {
+        let tempNode = this.head;
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            if(tempNode.value.key == key)
+            {
+                tempNode.value.value = newValue;
+                return true;
+            }
+            tempNode = tempNode.next;
+        }
+        return false;
+    }
+
+
+    // Method for HashMap, checking if key exists within bucket
+    hasKey(key)
+    {
+        let tempNode = this.head;
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            if(tempNode.value.key == key)
+            {
+                return true;
+            }
+            tempNode = tempNode.next;
+        }
+        return false;
+    }
+
+    // Method for HashMap, returns the value of Key
+    getValueFromKey(key)
+    {
+        let tempNode = this.head;
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            if(tempNode.value.key == key)
+            {
+                return tempNode.value.value;
+            }
+            tempNode = tempNode.next;
+        }
+        return null;
+    }
+
+    // Method for HashMap, returns the index of node containing key
+    getIndexOfKey(key) {
+        let tempNode = this.head;
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            if(tempNode.value.key == key)
+            {
+                return i;
+            }
+            tempNode = tempNode.next;
+        }
+        return null;
+    }
+
+    // Method for HashMap, returns an array of key, value pair nodes
+    getEntries() {
+        let tempNode = this.head;
+        let tempArr = [];
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            tempArr.push(tempNode.value);
+            tempNode = tempNode.next;
+        }
+        return tempArr;
+    }
+
+    // Method for HashMap, returns an array of keys 
+    getKeyEntries() {
+        let tempNode = this.head;
+        let tempArr = [];
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            tempArr.push(tempNode.value.key);
+            tempNode = tempNode.next;
+        }
+        return tempArr;
+    }
+
+    // Method for HashMap, returns an array of keys 
+    getValueEntries() {
+        let tempNode = this.head;
+        let tempArr = [];
+
+        for(let i = 0; i != this.size ; i++)
+        {
+            tempArr.push(tempNode.value.value);
+            tempNode = tempNode.next;
+        }
+        return tempArr;
+    }
+
+
 }
 
 
