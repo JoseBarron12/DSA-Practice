@@ -15,10 +15,93 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 };
 
 
+const levelOrder= (node,func, queue = [] ) => {
+    if(node == null) // Base Case: Leaf node
+    {
+        return;
+    }
+
+    if(queue.length == 0) // Ensures always a node on queue [Root of tree will appear]
+    {
+        queue.push(node);
+    }
+
+    func(queue.shift()); // Call function on node, then dequeue node
+
+    if(node.left != null) queue.push(node.left); // Enqueue left children if it exists
+    if(node.right != null) queue.push(node.right); // Enqueue right children if it exists
+    
+    levelOrder(node.left, func, queue); // Visit left side children 
+    levelOrder(node.right, func, queue); // Visit right side children 
+
+    return queue;
+}
+
+
+const levelOrderIteration = (node,func, queue = [] ) => {
+    
+    queue.push(node); // Ensures level 0 is taken to account
+    
+    while(queue.length > 0) // Stops running once queue is empty or after level order traversal
+    {
+        let tempNode = queue.shift(); // Dequeue first node
+        func(tempNode); // Call function on node
+        if(tempNode.left != null) queue.push(tempNode.left); // Enqueue left children if it exists
+        if(tempNode.right != null) queue.push(tempNode.right); // Enqueue right children if it exists
+    }
+}
+
+const inOrder = (node, func) => {
+    if(node == null) // Base Case: Leaf node
+    {
+        return;
+    }
+
+    inOrder(node.left, func);
+    func(node);
+    inOrder(node.right, func);
+}
+
+const preOrder = (node, func) => {
+    if(node == null) // Base Case: Leaf node
+    {
+        return;
+    }
+    
+    func(node);
+    preOrder(node.left, func);
+    preOrder(node.right, func);
+}
+
+const postOrder = (node, func) => {
+    if(node == null) // Base Case: Leaf node
+    {
+        return;
+    }
+    
+    postOrder(node.left, func);
+    postOrder(node.right, func);
+    func(node);
+}
+
+const findLongestPath = (node, height = 0) => {
+    if(node == null)
+    {
+        return height;
+    }
+
+    let leftHeight, rightHeight = height;
+
+    if(node.left != null) leftHeight = findLongestPath(node.left, height + 1);
+    if(node.right != null)  rightHeight = findLongestPath(node.right, height + 1);
+    
+    return (leftHeight > rightHeight) ? leftHeight : rightHeight;
+}
+
+
 export class BST {
     constructor(arr)
     {
-        console.log(arrToBST(arr));
         this._root = this.buildTree(arrToBST(arr));
     }
 
@@ -47,7 +130,7 @@ export class BST {
         prettyPrint(this.root);
     }
 
-    insert(value, node)
+    insert(value, node = this.root)
     {
         if(node == null)
         {
@@ -65,7 +148,7 @@ export class BST {
         return node;
     }
 
-    delete(value, node)
+    delete(value, node = this.root)
     {
         if(node.root == value)
         {
@@ -114,29 +197,132 @@ export class BST {
         return node;
     }
 
+    find(value, node = this.root)
+    {
+        if(node == null)
+        {
+            return null;
+        }
+        else if(node.root == value)
+        {
+            return node;
+        }
+
+        if(value < node.root) 
+        {
+           return this.find(value, node.left)
+        }
+        else 
+        {
+            return this.find(value, node.right);
+        }
+    }
+
+    levelOrderForEach(callback)
+    {
+        if(typeof callback != "function")
+        {
+            throw new Error("Callback function required");
+        }
+        
+        levelOrderIteration(this.root, callback);
+    }
+
+    inOrderForEach(callback)
+    {
+        if(typeof callback != "function")
+        {
+            throw new Error("Callback function required");
+        }
+        
+        inOrder(this.root, callback);
+    }
+
+    preOrderForEach(callback)
+    {
+        if(typeof callback != "function")
+        {
+            throw new Error("Callback function required");
+        }
+        
+        preOrder(this.root, callback);
+    }
+
+    postOrderForEach(callback)
+    {
+        if(typeof callback != "function")
+        {
+            throw new Error("Callback function required");
+        }
+        
+        postOrder(this.root, callback);
+    }
+
+    height(value)
+    {
+        const node = this.find(value);
+        return (node != null) ? findLongestPath(node) : null;
+    }
+
+    heightOfNode(node)
+    {
+        return (node != null) ? findLongestPath(node) : null;
+    }
+
+    depth(value, node = this.root, depth = 0)
+    {
+        if(node == null)
+        {
+            return null;
+        }
+        else if(node.root == value)
+        {
+            return depth;
+        }
+
+        if(value < node.root) 
+        {
+           return this.depth(value, node.left, depth + 1)
+        }
+        else 
+        {
+            return this.depth(value, node.right, depth + 1);
+        }
+    }
+
+    isBalanced()
+    {
+        let balanced = true
+        this.preOrderForEach((node) => {
+            
+            let leftHeight = 0;
+            let rightHeight = 0;
+            
+            if(node.left != null)
+            {
+                leftHeight = this.heightOfNode(node.left) + 1; // Take to account edge from parent
+            }
+            
+            if(node.right != null)
+            {
+                rightHeight = this.heightOfNode(node.right) + 1; // Take to account edge from parent
+            }
+
+            if(Math.abs(leftHeight - rightHeight) > 1) 
+            {
+                balanced = false;
+            }
+        })
+        return balanced;
+    }
+
+    rebalance() {
+        let currentValues = []
+        this.preOrderForEach((node) => {
+            currentValues.push(node.root);
+        });
+
+        this.root = this.buildTree(arrToBST(currentValues));
+    }
+
 }
-
-//const BSTree = new BST([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-//BSTree.print();
-
-//const BSTree2 = new BST([10,20,30]);
-//BSTree2.print();
-
-const BSTree3= new BST([1, 5, 9, 14, 23, 27]);
-BSTree3.print();
-
-BSTree3.insert(10, BSTree3.root);
-BSTree3.print();
-
-BSTree3.insert(28, BSTree3.root);
-BSTree3.print();
-
-BSTree3.delete(28, BSTree3.root); // DELETE NODE W/O CHILDREN [LEAF NODE]
-BSTree3.print();
-
-BSTree3.delete(14, BSTree3.root); // DELETE NODE W/ ONE CHILD 
-BSTree3.print();
-
-BSTree3.delete(9, BSTree3.root); // DELETE NODE W/ TWO CHILDREN
-BSTree3.print();
-
